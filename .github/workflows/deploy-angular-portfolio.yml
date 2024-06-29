@@ -1,0 +1,41 @@
+name: Deploy Angular Portfolio
+
+on:
+  push:
+    paths:
+      - "angular-portfolio/**"
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20.15.0"
+
+      - name: Install dependencies
+        run: |
+          cd angular-portfolio
+          npm install
+
+      - name: Build project
+        run: |
+          cd angular-portfolio
+          npm run build
+
+      - name: Deploy to Hostinger
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          port: ${{ secrets.FTP_PORT }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: dist/angular-portfolio
+          server-dir: /public_html
